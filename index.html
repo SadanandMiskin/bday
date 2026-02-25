@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>The Grand Reveal</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;900&family=Montserrat:wght@100;300;600&family=Playfair+Display:ital,wght@0,900;1,900&family=Great+Vibes&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+    <style>
+        :root {
+            --gold: #d4af37;
+            --gold-bright: #f9e297;
+            --white: #ffffff;
+            --bg: #050505;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            background-color: var(--bg);
+            color: var(--white);
+            font-family: 'Montserrat', sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            position: fixed;
+        }
+
+        /* =========================
+            Enter Overlay & Button
+        ========================= */
+        #enter-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #000;
+            display: flex;
+            flex-direction: column; /* Added for vertical stacking */
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 1s ease;
+        }
+
+        .enter-btn {
+            background: transparent;
+            color: var(--gold);
+            border: 1px solid var(--gold);
+            padding: 15px 40px;
+            font-family: 'Cinzel', serif;
+            font-weight: 900;
+            font-size: 1.2rem;
+            letter-spacing: 5px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
+        }
+
+        .enter-btn::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -100%;
+            width: 100%;
+            height: 200%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transform: rotate(25deg);
+            transition: none;
+        }
+
+        .enter-btn:hover {
+            background: var(--gold);
+            color: #000;
+            box-shadow: 0 0 30px var(--gold);
+        }
+
+        @keyframes shine {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        .enter-btn:not(:active)::after {
+            animation: shine 3s infinite;
+        }
+
+        /* =========================
+            Rest of your styles
+        ========================= */
+        #particles {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at center, #111 0%, #000 100%);
+            z-index: -1;
+        }
+
+        .shutter {
+            position: fixed;
+            left: 0; width: 100%; height: 50vh;
+            background: #000;
+            z-index: 100;
+        }
+        .shutter-top { top: 0; border-bottom: 1px solid rgba(212, 175, 55, 0.3); }
+        .shutter-bottom { bottom: 0; border-top: 1px solid rgba(212, 175, 55, 0.3); }
+
+        .scene {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            text-align: center; visibility: hidden;
+            padding: 30px;
+        }
+
+        .trailer-text {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(1.5rem, 7vw, 3.5rem);
+            letter-spacing: 8px;
+            font-weight: 900;
+            text-transform: uppercase;
+            background: linear-gradient(180deg, #fff 30%, var(--gold) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: blur(10px);
+            line-height: 1.4;
+        }
+
+        .sub-quote {
+            font-family: 'Cinzel', serif;
+            color: var(--gold);
+            font-size: 1rem;
+            letter-spacing: 5px;
+            margin-top: 20px;
+            opacity: 0;
+        }
+
+        #invite-section {
+            position: relative;
+            height: 100vh;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+        }
+
+        .invite-card {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            padding: 40px 25px;
+            background: rgba(10, 10, 10, 0.6);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            text-align: center;
+            border-radius: 2px;
+            z-index: 1;
+        }
+
+        .event-type {
+            font-family: 'Great Vibes', cursive;
+            font-size: 2.5rem;
+            color: var(--gold-bright);
+            margin-bottom: 15px;
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+        }
+
+        .birthday-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            letter-spacing: 2px;
+            font-weight: 900;
+            color: #fff;
+        }
+
+        .ampersand { font-family: 'Cinzel', serif; font-size: 0.8rem; color: var(--gold); opacity: 0.6; }
+
+        .details-box {
+            border-top: 1px solid rgba(212, 175, 55, 0.3);
+            padding-top: 25px;
+            display: grid;
+            gap: 20px;
+        }
+
+        .info-block h4 {
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: var(--gold);
+            margin-bottom: 8px;
+        }
+
+        .info-block p { font-size: 0.85rem; font-weight: 300; letter-spacing: 1px; }
+
+        .glow {
+            position: absolute;
+            width: 250px; height: 250px;
+            background: var(--gold);
+            filter: blur(120px);
+            opacity: 0.15;
+            z-index: 0;
+        }
+
+        .corner { position: absolute; width: 30px; height: 30px; border: 1px solid var(--gold); }
+        .top-left { top: 15px; left: 15px; border-right: none; border-bottom: none; }
+        .bottom-right { bottom: 15px; right: 15px; border-left: none; border-top: none; }
+    </style>
+</head>
+<body>
+
+<div id="enter-overlay">
+    <div style="position: absolute; top: 10%; font-family: 'Cinzel', serif; letter-spacing: 6px; color: var(--gold); opacity: 0.8; font-size: 1.3rem;">
+        YOU ARE WELCOME 🥂
+    </div>
+
+    <button class="enter-btn" id="start-trigger">ENTER</button>
+
+    <div style="margin-top: 20px; font-family: 'Montserrat', sans-serif; font-size: 0.65rem; letter-spacing: 3px; color: var(--gold); opacity: 0.7; font-weight: 300;">
+        :D SADZ
+    </div>
+</div>
+
+<audio id="bg-music" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" preload="auto"></audio>
+
+<div class="shutter shutter-top"></div>
+<div class="shutter shutter-bottom"></div>
+<div id="particles"></div>
+
+<div class="scene" id="scene1">
+    <h1 class="trailer-text">The Wait<br>Is Over</h1>
+</div>
+
+<div class="scene" id="scene2">
+    <h1 class="trailer-text">Get Ready...<br>For the Party</h1>
+    <div class="sub-quote">~ SSSR</div>
+</div>
+
+<div id="invite-section">
+    <div class="glow"></div>
+    <div class="invite-card">
+        <div class="corner top-left"></div>
+        <div class="corner bottom-right"></div>
+        <div class="event-type">The Birthday Gala</div>
+        <div style="display: flex; flex-direction: column; gap: 5px; margin-bottom: 25px;">
+            <div class="birthday-name">RICHIE</div><div class="ampersand">&</div>
+            <div class="birthday-name">SAKSHI</div><div class="ampersand">&</div>
+            <div class="birthday-name">SANGRAM</div><div class="ampersand">&</div>
+            <div class="birthday-name">SADANAND</div>
+        </div>
+        <div class="details-box">
+            <div class="info-block"><h4>The Date</h4><p>FRIDAY · MAR 06 · 2026</p><p>7:30 PM UNTIL LATE</p></div>
+            <div class="info-block"><h4>The Venue</h4><p>Babylonia - Global Food and Cocktails</p><p>7th Block, Koramangala</p></div>
+            <div class="info-block"><h4>Attire</h4><p>Who Cares</p></div>
+        </div>
+    </div>
+</div>
+
+<script>
+const tl = gsap.timeline({ paused: true });
+const music = document.getElementById('bg-music');
+const startBtn = document.getElementById('start-trigger');
+const overlay = document.getElementById('enter-overlay');
+
+tl.to(".shutter-top", { yPercent: -45, duration: 2, ease: "power4.inOut" })
+  .to(".shutter-bottom", { yPercent: 45, duration: 2, ease: "power4.inOut" }, "<")
+  .to("#scene1", { autoAlpha: 1, duration: 0.1 }, "-=1")
+  .to("#scene1 .trailer-text", { filter: "blur(0px)", scale: 1.3, duration: 3.2, ease: "sine.out" })
+  .to("#scene1", { opacity: 0, duration: 1 })
+  .set("#scene1", { display: "none" })
+  .to("#scene2", { autoAlpha: 1, duration: 0.1 })
+  .to("#scene2 .trailer-text", { filter: "blur(0px)", scale: 1.1, duration: 3, ease: "sine.out" })
+  .to("#scene2 .sub-quote", { opacity: 1, y: -10, duration: 1 }, "-=1.5")
+  .to("#scene2", { opacity: 0, duration: 1 })
+  .set("#scene2", { display: "none" })
+  .to(".shutter-top", { yPercent: -100, duration: 1.5, ease: "power4.in" })
+  .to(".shutter-bottom", { yPercent: 100, duration: 1.5, ease: "power4.in" }, "<")
+  .set("#invite-section", { display: "flex", opacity: 0 }, "-=0.5")
+  .to("#invite-section", { opacity: 1, duration: 1 })
+  .from(".invite-card", { y: 100, opacity: 0, duration: 1.5, ease: "power4.out" }, "-=0.5")
+  .from(".birthday-name", { opacity: 0, y: -20, stagger: 0.2, duration: 1 }, "-=1")
+  .from("p", { opacity: 0, y: -20, stagger: 0.2, duration: 1 }, "-=1");
+
+startBtn.addEventListener('click', () => {
+    overlay.style.opacity = '0';
+    setTimeout(() => {
+        overlay.style.display = 'none';
+        music.play(10);
+        tl.play();
+    }, 1000);
+});
+
+document.addEventListener('mousemove', (e) => {
+    const xPos = (e.clientX / window.innerWidth) - 0.5;
+    const yPos = (e.clientY / window.innerHeight) - 0.5;
+    gsap.to(".invite-card", { rotationY: xPos * 8, rotationX: -yPos * 8, duration: 1.2 });
+});
+</script>
+
+</body>
+</html>
